@@ -9,22 +9,18 @@ import 'dart:collection';
 import 'package:http/http.dart' as http;
 import 'package:dartlang_utils/dartlang_utils.dart' as str;
 
-class mul_choise_img_trans extends StatelessWidget {
+class mul_choise_trans extends StatelessWidget {
   final String dir;
   final String elem;
   final int routenum;
   late Map<String, String> svg;
   @override
-  mul_choise_img_trans(
+  mul_choise_trans(
     this.dir,
     this.elem,
     this.routenum,
   );
-
-  @override
   Widget build(BuildContext context) {
-    var url = Uri.parse(
-        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3862&t=f4692966c4beef6a');
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -144,12 +140,12 @@ class mul_choise_img_trans extends StatelessWidget {
   }
 }
 
-class mul_choise_img_trans_Ans extends StatelessWidget {
+class mul_choise_trans_Ans extends StatelessWidget {
   final String dir;
   final String elem;
   late Map<String, String> svg;
   @override
-  mul_choise_img_trans_Ans(
+  mul_choise_trans_Ans(
     this.dir,
     this.elem,
   );
@@ -222,55 +218,6 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
           if (current.contains("#")) {
             break;
           }
-          if (current.contains("!")) {
-            Future<List<String>> work = get_svg_ans_name("");
-            j++;
-            List<String> list = getAns(current);
-            for (int current_ans = 0;
-                current_ans < list.length - 1;
-                current_ans = current_ans + 2) {
-              double width = MediaQuery.of(context).size.width / 1.5;
-              double height = MediaQuery.of(context).size.height / 2;
-              height > width ? height = width : width = height;
-              ret.add(
-                UnconstrainedBox(
-                  child: TextButton(
-                    style: ButtonStyle(
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue),
-                    ),
-                    onPressed: () async {
-                      String ret = "";
-                      String curr = (list[current_ans].substring(1));
-                      curr = svg[curr] ?? "";
-                      List<String> wow = await work;
-                      ret=wow[0];
-                      for(int i=0;i<wow.length;i++){
-                        
-                        print(wow[i]);
-                      }
-                      
-          
-                      //print(ret);
-                    },
-                    child: Container(
-                      color: (Colors.white),
-                      margin: const EdgeInsets.all(10),
-                      child: SvgPicture.asset(
-                        (list[current_ans + 1]
-                            .substring(0, list[current_ans + 1].length - 1)),
-                        semanticsLabel: dir + elem,
-                        width: width,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }
-            i++;
-            continue;
-          }
-
           if (current == "" || current.startsWith("-")) {
             i++;
             continue;
@@ -312,69 +259,20 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
     return ret;
   }
 
-  List<String> getAns(String str) {
-    List<String> curr = str.split(" ");
-    for (int i = 0; i < curr.length; i++) {
-      //if (curr[i] != modify_links(curr[i]) && curr[i].contains("!")) {
-      //  curr[i - 1] = curr[i];
-      //}
-      curr[i] = modify_links(curr[i]);
-      curr[i] = curr[i].replaceAllMapped(" ", (match) => "");
-      if (curr[i].contains("!")) {
-        continue;
-      }
-      if (curr[i].contains(RegExp('[^A-Za-z0-9]'))) {
-        continue;
-      }
-      curr[i] = curr[i].replaceAllMapped(RegExp('[^A-Za-z0-9]'), (match) => '');
-      curr.removeWhere((element) =>
-          !element.contains(RegExp('[a-z]', caseSensitive: false)));
-    }
-    curr.removeWhere(
-        (element) => !element.contains(RegExp('[a-z]', caseSensitive: false)));
-    return curr;
-  }
-
-  String modify_links(String str) {
-    List<String> curr = str.split("![");
-    for (int i = 1; i < curr.length; i++) {
-      curr[i] = "![" + curr[i];
-    }
-    List<String> uptd = [];
-    for (int i = 0; i < curr.length; i++) {
-      uptd.addAll(curr[i].split("]"));
-    }
-    for (int i = 1; i < uptd.length; i = i + 2) {
-      uptd[i] = uptd[i] + "]";
-    }
-    curr = uptd;
-    uptd = [];
-    String loc = "";
-    for (int i = 0; i < curr.length; i++) {
-      if (curr[i].startsWith("![") && curr[i].endsWith("]")) {
-        loc = curr[i].substring(1);
-        curr[i] = dir + (svg[loc] ?? "") + ")"; //"![](resource:" +
-      }
-    }
-    curr.removeWhere(
-        (element) => !element.contains(RegExp('[a-z]', caseSensitive: false)));
-    return curr.join();
-  }
-
   Future<List<String>> get_svg_ans_name(String String_url) async {
     var url = Uri.parse(
         'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3667&t=6b118501fab8a9d6');
     http.Response data = await http.get(url);
     String loc = data.body;
     print(data.statusCode);
-    
+
     List<String> test = [];
     List<String> test2 = [];
     List<String> curr = loc.split("\n");
-    bool event=false;
+    bool event = false;
     for (int i = 0; i < curr.length; i++) {
-      if(!event){
-      event =curr[i].contains("answer");
+      if (!event) {
+        event = curr[i].contains("answer");
       }
       if (event) {
         test.addAll(curr[i].split("img src"));
@@ -383,7 +281,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
 
     for (int i = 1; i < test.length; i++) {
       for (var i in test[i].split("\"")) {
-        if (i.contains("SaveAnswer")&& !i.contains("function")) {
+        if (i.contains("SaveAnswer") && !i.contains("function")) {
           int left = i.indexOf("(");
           int right = i.indexOf(")");
           test2.add(i.substring(left + 2, right - 1));

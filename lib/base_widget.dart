@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart'; // BSD-3
 import 'package:flutter_svg/flutter_svg.dart'; // MIT
 import 'package:flutter/services.dart';
+import 'package:appthesis/multiple_choice.dart';
 // this widget stores all questions form where we can acces them this is where we are fetching the questions
 
 class base_widget extends StatelessWidget {
@@ -38,11 +39,11 @@ class base_widget extends StatelessWidget {
             //need the def here to find the correct route to ans field
          questionAnsField3: (context) => mul_choise_img_trans_Ans(
             "2022-CA-02_Mysteria/", "2022-CA-02-deu.task.md"),
-          question4: (context) => mul_choise_img_trans(
-            "2022-BE-02_Four_Tiles/", "2022-BE-02-deu.task.md",4),
+          question4: (context) => mul_choise_trans(
+            "2022-CA-04_Favourite_Gem/", "2022-CA-04-deu.task.md",4),
             //need the def here to find the correct route to ans field
-         questionAnsField4: (context) => mul_choise_img_trans_Ans(
-            "2022-BE-02_Four_Tiles/", "2022-BE-02-deu.task.md"),
+         questionAnsField4: (context) => mul_choise_trans_Ans(
+            "2022-CA-04_Favourite_Gem/", "2022-CA-04-deu.task.md"),
       },
     );
   }

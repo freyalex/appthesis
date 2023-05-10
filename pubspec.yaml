@@ -71,6 +71,8 @@ flutter:
     - '2022-BE-02_Four_Tiles/graphics/'
     - '2022-CA-02_Mysteria/'
     - '2022-CA-02_Mysteria/graphics/'
+    - '2022-CA-04_Favourite_Gem/'
+    - '2022-CA-04_Favourite_Gem/graphics/'
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
