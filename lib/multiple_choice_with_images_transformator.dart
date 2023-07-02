@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart'; // BSD-3
@@ -8,6 +7,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+
 class mul_choise_img_trans extends StatelessWidget {
   final String dir;
   final String elem;
@@ -24,52 +24,40 @@ class mul_choise_img_trans extends StatelessWidget {
   Widget build(BuildContext context) {
     var url = Uri.parse(
         'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3862&t=f4692966c4beef6a');
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text("Question Description"),
-      ),
-      body: FutureBuilder(
-        /* future:http.get(url),
-        builder: (BuildContext context, AsyncSnapshot<http.Response> snapshot) {
-          http.Response? loc=snapshot.data;
-          print(loc?.statusCode);
-          print(loc?.body);
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-         }*/
-        future: rootBundle.loadString(dir + elem),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasData) {
-            String markdown = snapshot.data ?? "";
-            if (markdown == "") {
-              exit(1);
-            }
-            init_SVG(markdown);
-            markdown = clean(markdown);
-            markdown = modify_links(markdown);
-
-            return Markdown(
-              data: markdown,
-              imageBuilder: (a, v, b) => SvgPicture.asset(
-                a.path,
-                semanticsLabel: dir + elem,
-              ),
-            );
+    return FutureBuilder(
+      future: rootBundle.loadString(dir + elem),
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.hasData) {
+          String markdown = snapshot.data ?? "";
+          if (markdown == "") {
+            exit(1);
           }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          String a = 'questionAnsField' + "$routenum";
-          Navigator.pushNamed(context, a);
-        },
-      ),
+          init_SVG(markdown);
+          markdown = modify_links(clean(markdown));
+          return Container(
+              color: Color.fromARGB(255, 255, 255, 255),
+              child: GestureDetector(
+                onTap: () {
+                  String a = 'questionAnsField' + "$routenum";
+                  Navigator.pushNamed(context, a);
+                },
+                onDoubleTap: () => Navigator.pop(context),
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                  child: Markdown(
+                    data: markdown,
+                    imageBuilder: (a, v, b) => SvgPicture.asset(
+                      a.path,
+                      semanticsLabel: dir + elem,
+                    ),
+                  ),
+                ),
+              ));
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 
@@ -164,20 +152,13 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
             exit(1);
           }
           init_SVG(markdown);
-          //markdown =modify_links(markdown);
-          return Scaffold(
-            appBar: AppBar(
-              // Here we take the value from the MyHomePage object that was created by
-              // the App.build method, and use it to set our appbar title.
-              title: Text("Your Answer"),
-            ),
-            body: ListView(
-              children: question_list(markdown, context),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+          return Container(
+            color: Color.fromARGB(255, 255, 255, 255),
+            child: GestureDetector(
+              onDoubleTap: () => Navigator.pop(context),
+              child: ListView(
+                children: question_list(markdown, context),
+              ),
             ),
           );
         }
@@ -231,6 +212,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
               double width = MediaQuery.of(context).size.width / 1.5;
               double height = MediaQuery.of(context).size.height / 2;
               height > width ? height = width : width = height;
+              //strings are pointers
               String a = j.toString();
               ret.add(
                 UnconstrainedBox(
@@ -251,7 +233,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                             "Content-Type": "application/x-www-form-urlencoded",
                           },
                           encoding: Encoding.getByName('utf-8'),
-                          body: {"answer": wow[int.parse(a)-1]});
+                          body: {"answer": wow[int.parse(a) - 1]});
                       response.then((value) => print(value.body
                           .contains("Du hast die richtige Antwort gewählt.")));
                     },
@@ -287,6 +269,16 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
               onPressed: () {
                 curr = current.substring(3);
                 print(curr);
+                var response = http.post(
+                    Uri.parse(
+                        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3667&t=6b118501fab8a9d6'),
+                    headers: {
+                      "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    encoding: Encoding.getByName('utf-8'),
+                    body: {"answer": curr});
+                response.then((value) => print(value.body
+                    .contains("Du hast die richtige Antwort gewählt.")));
               },
               child: Container(
                 alignment: Alignment.center,
@@ -317,9 +309,6 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
   List<String> getAns(String str) {
     List<String> curr = str.split(" ");
     for (int i = 0; i < curr.length; i++) {
-      //if (curr[i] != modify_links(curr[i]) && curr[i].contains("!")) {
-      //  curr[i - 1] = curr[i];
-      //}
       curr[i] = modify_links(curr[i]);
       curr[i] = curr[i].replaceAllMapped(" ", (match) => "");
       if (curr[i].contains("!")) {
@@ -389,9 +378,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
           int left = i.indexOf("(");
           int right = i.indexOf(")");
           test2.add(i.substring(left + 2, right - 1));
-        } /*else if (i.contains(".svg")) {
-          test2.add(i);
-        }*/
+        }
       }
     }
     test2.sort();

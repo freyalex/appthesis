@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart'; // BSD-3
 import 'package:flutter_svg/flutter_svg.dart'; // MIT
 import 'package:flutter/services.dart';
-import 'package:appthesis/multiple_choice.dart';
 // this widget stores all questions form where we can acces them this is where we are fetching the questions
 
 class base_widget extends StatelessWidget {
@@ -43,7 +42,7 @@ class base_widget extends StatelessWidget {
           question4: (context) => clicable_svg_inter(
             "2020-MK-03_Virus/graphics/", "2020-MK-03_taskbody-interactive-interactive.svg"),
             //need the def here to find the correct route to ans field
-         questionAnsField4: (context) => mul_choise_trans_Ans(
+         questionAnsField4: (context) => mul_choise_img_trans_Ans(
             "2022-CA-04_Favourite_Gem/", "2022-CA-04-deu.task.md"),
       },
     );
