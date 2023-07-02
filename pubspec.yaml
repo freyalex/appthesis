@@ -73,6 +73,8 @@ flutter:
     - '2022-CA-02_Mysteria/graphics/'
     - '2022-CA-04_Favourite_Gem/'
     - '2022-CA-04_Favourite_Gem/graphics/'
+    - '2020-MK-03_Virus/'
+    - '2020-MK-03_Virus/graphics/'
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:appthesis/clicable_svg.dart';
 import 'package:appthesis/const/routes.dart';
 import 'package:appthesis/data_class.dart';
 import 'package:appthesis/multiple_choice_with_images_transformator.dart';
@@ -39,8 +40,8 @@ class base_widget extends StatelessWidget {
             //need the def here to find the correct route to ans field
          questionAnsField3: (context) => mul_choise_img_trans_Ans(
             "2022-CA-02_Mysteria/", "2022-CA-02-deu.task.md"),
-          question4: (context) => mul_choise_trans(
-            "2022-CA-04_Favourite_Gem/", "2022-CA-04-deu.task.md",4),
+          question4: (context) => clicable_svg_inter(
+            "2020-MK-03_Virus/graphics/", "2020-MK-03_taskbody-interactive-interactive.svg"),
             //need the def here to find the correct route to ans field
          questionAnsField4: (context) => mul_choise_trans_Ans(
             "2022-CA-04_Favourite_Gem/", "2022-CA-04-deu.task.md"),
