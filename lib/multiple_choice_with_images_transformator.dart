@@ -1,14 +1,13 @@
-import 'dart:ffi';
+
 import 'dart:io';
-import 'package:appthesis/const/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart'; // BSD-3
 import 'package:flutter_svg/flutter_svg.dart'; // MIT
 import 'package:flutter/services.dart';
 import 'dart:collection';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:dartlang_utils/dartlang_utils.dart' as str;
-
+import 'dart:async';
 class mul_choise_img_trans extends StatelessWidget {
   final String dir;
   final String elem;
@@ -232,6 +231,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
               double width = MediaQuery.of(context).size.width / 1.5;
               double height = MediaQuery.of(context).size.height / 2;
               height > width ? height = width : width = height;
+              String a = j.toString();
               ret.add(
                 UnconstrainedBox(
                   child: TextButton(
@@ -240,18 +240,20 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                           MaterialStateProperty.all<Color>(Colors.blue),
                     ),
                     onPressed: () async {
-                      String ret = "";
                       String curr = (list[current_ans].substring(1));
                       curr = svg[curr] ?? "";
                       List<String> wow = await work;
-                      ret=wow[0];
-                      for(int i=0;i<wow.length;i++){
-                        
-                        print(wow[i]);
-                      }
-                      
-          
-                      //print(ret);
+
+                      var response = http.post(
+                          Uri.parse(
+                              'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3667&t=6b118501fab8a9d6'),
+                          headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                          },
+                          encoding: Encoding.getByName('utf-8'),
+                          body: {"answer": wow[int.parse(a)-1]});
+                      response.then((value) => print(value.body
+                          .contains("Du hast die richtige Antwort gewählt.")));
                     },
                     child: Container(
                       color: (Colors.white),
@@ -367,14 +369,14 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
     http.Response data = await http.get(url);
     String loc = data.body;
     print(data.statusCode);
-    
+
     List<String> test = [];
     List<String> test2 = [];
     List<String> curr = loc.split("\n");
-    bool event=false;
+    bool event = false;
     for (int i = 0; i < curr.length; i++) {
-      if(!event){
-      event =curr[i].contains("answer");
+      if (!event) {
+        event = curr[i].contains("answer");
       }
       if (event) {
         test.addAll(curr[i].split("img src"));
@@ -383,7 +385,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
 
     for (int i = 1; i < test.length; i++) {
       for (var i in test[i].split("\"")) {
-        if (i.contains("SaveAnswer")&& !i.contains("function")) {
+        if (i.contains("SaveAnswer") && !i.contains("function")) {
           int left = i.indexOf("(");
           int right = i.indexOf(")");
           test2.add(i.substring(left + 2, right - 1));
@@ -392,6 +394,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
         }*/
       }
     }
+    test2.sort();
     return test2;
   }
 }

@@ -230,6 +230,7 @@ class mul_choise_trans_Ans extends StatelessWidget {
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
               ),
               onPressed: () {
+                
                 curr = current.substring(3);
                 print(curr);
               },
@@ -290,6 +291,7 @@ class mul_choise_trans_Ans extends StatelessWidget {
         }*/
       }
     }
+    
     return test2;
   }
 }
