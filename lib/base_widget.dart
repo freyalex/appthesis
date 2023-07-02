@@ -6,8 +6,7 @@ import 'package:appthesis/data_class.dart';
 import 'package:appthesis/multiple_choice_with_images_transformator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart'; // BSD-3
-import 'package:flutter_svg/flutter_svg.dart'; // MIT
-import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart'; // MIT d
 // this widget stores all questions form where we can acces them this is where we are fetching the questions
 
 class base_widget extends StatelessWidget {
@@ -28,22 +27,22 @@ class base_widget extends StatelessWidget {
             "2022-DE-02_Heart_Graphics/", "2022-DE-02-deu.task.md",1),
             //need the def here to find the correct route to ans field
          questionAnsField1: (context) => mul_choise_img_trans_Ans(
-            "2022-DE-02_Heart_Graphics/", "2022-DE-02-deu.task.md"),
+            "2022-DE-02_Heart_Graphics/", "2022-DE-02-deu.task.md",1),
         question2: (context) => mul_choise_img_trans(
             "2022-BE-02_Four_Tiles/", "2022-BE-02-deu.task.md",2),
             //need the def here to find the correct route to ans field
          questionAnsField2: (context) => mul_choise_img_trans_Ans(
-            "2022-BE-02_Four_Tiles/", "2022-BE-02-deu.task.md"),
+            "2022-BE-02_Four_Tiles/", "2022-BE-02-deu.task.md",2),
           question3: (context) => mul_choise_img_trans(
             "2022-CA-02_Mysteria/", "2022-CA-02-deu.task.md",3),
             //need the def here to find the correct route to ans field
          questionAnsField3: (context) => mul_choise_img_trans_Ans(
-            "2022-CA-02_Mysteria/", "2022-CA-02-deu.task.md"),
+            "2022-CA-02_Mysteria/", "2022-CA-02-deu.task.md",3),
           question4: (context) => clicable_svg_inter(
             "2020-MK-03_Virus/graphics/", "2020-MK-03_taskbody-interactive-interactive.svg"),
             //need the def here to find the correct route to ans field
          questionAnsField4: (context) => mul_choise_img_trans_Ans(
-            "2022-CA-04_Favourite_Gem/", "2022-CA-04-deu.task.md"),
+            "2022-CA-04_Favourite_Gem/", "2022-CA-04-deu.task.md",4),
       },
     );
   }
@@ -74,7 +73,7 @@ class _Parent extends StatelessWidget {
     int length = questionList.length;
     List<Widget> containers = List.filled(length, const Markdown(data: ""));
     for (int i = 0; i < length; i++) {
-      answer.add("");
+      widgetList.add(Data());
       int j=i+1;
       containers[i] = UnconstrainedBox(
         child: TextButton(

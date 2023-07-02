@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:appthesis/data_class.dart';
 import 'package:dartlang_utils/dartlang_extensions.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/widgets.dart';
@@ -117,6 +118,7 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
               body: {"answer": to_string_ans(ans)});
           response.then((value) =>
         print(value.body.contains("Du hast die richtige Antwort gewählt.")));
+        print(widgetList);
         Navigator.pop(context);
       },
       

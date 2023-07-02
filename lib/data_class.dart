@@ -1,6 +1,13 @@
 /*
 the data is stored here 
 */
-int questionType=0;
 List<String> questionList = [];
-List<String> answer=[];
+class Data{
+int questionType=0;
+String answer="";
+@override
+  String toString() {
+    return questionType.toString()+"\n"+answer+"\n";
+  }
+}
+List <Data> widgetList=[];

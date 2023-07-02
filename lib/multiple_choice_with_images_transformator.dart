@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:appthesis/data_class.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart'; // BSD-3
 import 'package:flutter_svg/flutter_svg.dart'; // MIT
@@ -23,7 +24,7 @@ class mul_choise_img_trans extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var url = Uri.parse(
-        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3862&t=f4692966c4beef6a');
+        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3861&t=1780bf0b391778f6');
     return FutureBuilder(
       future: rootBundle.loadString(dir + elem),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
@@ -134,12 +135,10 @@ class mul_choise_img_trans extends StatelessWidget {
 class mul_choise_img_trans_Ans extends StatelessWidget {
   final String dir;
   final String elem;
+  final int routenum;
   late Map<String, String> svg;
   @override
-  mul_choise_img_trans_Ans(
-    this.dir,
-    this.elem,
-  );
+  mul_choise_img_trans_Ans(this.dir, this.elem, this.routenum);
 
   @override
   Widget build(BuildContext context) {
@@ -209,11 +208,13 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
             for (int current_ans = 0;
                 current_ans < list.length - 1;
                 current_ans = current_ans + 2) {
+              
               double width = MediaQuery.of(context).size.width / 1.5;
               double height = MediaQuery.of(context).size.height / 2;
               height > width ? height = width : width = height;
               //strings are pointers
-              String a = j.toString();
+              String a = (j).toString();
+              j++;//this is important
               ret.add(
                 UnconstrainedBox(
                   child: TextButton(
@@ -225,10 +226,11 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                       String curr = (list[current_ans].substring(1));
                       curr = svg[curr] ?? "";
                       List<String> wow = await work;
-
+                      widgetList[routenum-1].answer = wow[int.parse(a) - 1];
+                      
                       var response = http.post(
                           Uri.parse(
-                              'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3667&t=6b118501fab8a9d6'),
+                              'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3861&t=1780bf0b391778f6'),
                           headers: {
                             "Content-Type": "application/x-www-form-urlencoded",
                           },
@@ -269,9 +271,10 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
               onPressed: () {
                 curr = current.substring(3);
                 print(curr);
+                widgetList[routenum-1].answer = curr;
                 var response = http.post(
                     Uri.parse(
-                        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3667&t=6b118501fab8a9d6'),
+                        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3861&t=1780bf0b391778f6'),
                     headers: {
                       "Content-Type": "application/x-www-form-urlencoded",
                     },
@@ -354,7 +357,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
 
   Future<List<String>> get_svg_ans_name(String String_url) async {
     var url = Uri.parse(
-        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3667&t=6b118501fab8a9d6');
+        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3861&t=1780bf0b391778f6');
     http.Response data = await http.get(url);
     String loc = data.body;
     print(data.statusCode);
