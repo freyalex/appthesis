@@ -23,8 +23,6 @@ class mul_choise_img_trans extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var url = Uri.parse(
-        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3861&t=1780bf0b391778f6');
     return FutureBuilder(
       future: rootBundle.loadString(dir + elem),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
@@ -208,13 +206,12 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
             for (int current_ans = 0;
                 current_ans < list.length - 1;
                 current_ans = current_ans + 2) {
-              
               double width = MediaQuery.of(context).size.width / 1.5;
               double height = MediaQuery.of(context).size.height / 2;
               height > width ? height = width : width = height;
               //strings are pointers
               String a = (j).toString();
-              j++;//this is important
+              j++; //this is important
               ret.add(
                 UnconstrainedBox(
                   child: TextButton(
@@ -226,16 +223,17 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                       String curr = (list[current_ans].substring(1));
                       curr = svg[curr] ?? "";
                       List<String> wow = await work;
-                      widgetList[routenum-1].answer = wow[int.parse(a) - 1];
-                      
+                      widgetList[routenum - 1].answer = wow[int.parse(a) - 1];
+                      int que_id=3861;
+                      String t="1780bf0b391778f6";
                       var response = http.post(
                           Uri.parse(
-                              'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3861&t=1780bf0b391778f6'),
+                              'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=$que_id&t='+t),
                           headers: {
                             "Content-Type": "application/x-www-form-urlencoded",
                           },
                           encoding: Encoding.getByName('utf-8'),
-                          body: {"answer": wow[int.parse(a) - 1]});
+                          body: {"answer": widgetList[routenum - 1].answer});
                       response.then((value) => print(value.body
                           .contains("Du hast die richtige Antwort gewählt.")));
                     },
@@ -270,16 +268,17 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
               ),
               onPressed: () {
                 curr = current.substring(3);
-                print(curr);
-                widgetList[routenum-1].answer = curr;
+                widgetList[routenum - 1].answer = curr;
+                int que_id=3861;
+                String t="1780bf0b391778f6";
                 var response = http.post(
                     Uri.parse(
-                        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3861&t=1780bf0b391778f6'),
+                         'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=$que_id&t='+t),
                     headers: {
                       "Content-Type": "application/x-www-form-urlencoded",
                     },
                     encoding: Encoding.getByName('utf-8'),
-                    body: {"answer": curr});
+                    body: {"answer": widgetList[routenum - 1].answer});
                 response.then((value) => print(value.body
                     .contains("Du hast die richtige Antwort gewählt.")));
               },
@@ -356,8 +355,10 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
   }
 
   Future<List<String>> get_svg_ans_name(String String_url) async {
+    int que_id=3861;
+    String t="1780bf0b391778f6";
     var url = Uri.parse(
-        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3861&t=1780bf0b391778f6');
+        'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=$que_id&t='+t);
     http.Response data = await http.get(url);
     String loc = data.body;
     print(data.statusCode);
@@ -386,5 +387,13 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
     }
     test2.sort();
     return test2;
+  }
+
+  //not functional
+  int get_que_id(String name){
+    return 0;
+  }
+  String get_t(String name){
+    return "";
   }
 }

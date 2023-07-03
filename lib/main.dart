@@ -2,9 +2,9 @@ import 'package:appthesis/base_widget.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const base_widget());
 }
-
+/*
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -14,7 +14,6 @@ class MyApp extends StatelessWidget {
     return base_widget();
   }
 }
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -99,3 +98,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+*/

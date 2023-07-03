@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:appthesis/data_class.dart';
-import 'package:dartlang_utils/dartlang_extensions.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // MIT
@@ -9,23 +8,23 @@ import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:dartlang_utils/dartlang_utils.dart' as str;
 
 class clicable_svg_inter extends StatefulWidget {
   final String dir;
   final String elem;
+  final int routenum;
 
   @override
-  clicable_svg_inter(this.dir, this.elem);
+  clicable_svg_inter(this.dir, this.elem, this.routenum);
 
-  _clicable_svg_inter createState() => _clicable_svg_inter(dir, elem);
+  _clicable_svg_inter createState() => _clicable_svg_inter(dir, elem, routenum);
 }
 
 class _clicable_svg_inter extends State<clicable_svg_inter> {
   // ans list and list on ans entety
   List<bool> ans = [];
-  List<Ans> svg_ans=[];
+  List<Ans> svg_ans = [];
   // viebox things
   final GlobalKey key = GlobalKey();
   double ratio = 1;
@@ -36,18 +35,18 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
   Offset offset = Offset(0, 0);
   Offset offset_past = Offset(0, 0);
 
-  // svg 
+  // svg
   late final String svg;
-  String first_part="";
+  String first_part = "";
   String displayedSvg =
       "<svg width=\"240\" height=\"320\"> </svg>"; // the svg to be changed
-  // where we are 
+  // where we are
   final String dir;
   final String elem;
-
+  final int routenum;
 
   @override
-  _clicable_svg_inter(this.dir, this.elem);
+  _clicable_svg_inter(this.dir, this.elem, this.routenum);
   void get_size_offset() {
     //width init is incorrect
     final RenderBox box = key.currentContext!.findRenderObject()! as RenderBox;
@@ -68,6 +67,7 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
         () {
           svg = loaded;
           displayedSvg = svg;
+
           if (svg.contains('viewBox')) {
             int loc = svg.indexOf('viewBox');
             String curr = svg.substring(loc);
@@ -85,6 +85,13 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
             double y = double.parse(str4[3]);
             ratio = y / x;
             viewbox = Size(x, y);
+            if (widgetList[routenum - 1].answer.isEmpty) {
+              TapDownDetails details = TapDownDetails(
+                  globalPosition: Offset(0, 0), localPosition: Offset(0, 0));
+              udpate(details, true);
+            } else {
+              update_with_bool(get_ans_list());
+            }
           } else {
             exit(2);
           }
@@ -107,82 +114,24 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
         MediaQuery.of(context).size.width * ratio);
     WidgetsBinding.instance.addPostFrameCallback((_) => get_size_offset());
     return GestureDetector(
-      onDoubleTap: ()  {
+      onDoubleTap: () {
+        int que_id=3509;
+        String t="411012285942d43f";
+        widgetList[routenum - 1].answer = to_string_ans(ans);
         var response = http.post(
-              Uri.parse(
-                  'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=3509&t=411012285942d43f'),
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-              },
-              encoding: Encoding.getByName('utf-8'),
-              body: {"answer": to_string_ans(ans)});
-          response.then((value) =>
-        print(value.body.contains("Du hast die richtige Antwort gewählt.")));
-        print(widgetList);
+            Uri.parse(
+                'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=$que_id&t='+t),
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            encoding: Encoding.getByName('utf-8'),
+            body: {"answer": to_string_ans(ans)});
+        response.then((value) => print(
+            value.body.contains("Du hast die richtige Antwort gewählt.")));
         Navigator.pop(context);
       },
-      
       onTapDown: (details) {
-        final tapPosition = details.globalPosition;
-        double x = tapPosition.dx;
-        double y = tapPosition.dy;
-        if (inside_svg(x, y)) {
-          //inside Svg
-          x = x - offset.dx;
-          y = y - offset.dy;
-          x = x / size.height * viewbox.height;
-          y = y / size.width * viewbox.width;
-          // x y are inside svg position
-          //tap holds the postion inside the element;
-
-
-          if(svg_ans.isEmpty){
-          String svg_loc = svg;
-          List<String> elem_list = svg_loc.split("<g");
-
-          for (int i = 0; i < elem_list.length; i++) {
-            if (i == 0) continue;
-            elem_list[i] = "<g" + elem_list[i];
-          }
-          elem_list[elem_list.length - 1].replaceAll("</svg>", "");
-          elem_list.add("</svg>");
-          int k = ((elem_list.length - 3) / 3).toInt();
-          List<Ans> list = [];
-          if (ans.length < k) {
-            for (int i = 0; i < k; i++) {
-              ans.add(false);
-            }
-          }
-          //+2 everywhere 0 1 2
-          for (int i = 0; i < k; i++) {
-            if (i == k - 1) {
-              list.add(Ans(
-                  elem_list[i * 3 + 2],
-                  elem_list[i * 3 + 3] + "</g>" + "\n</svg>",
-                  elem_list[i * 3 + 4],
-                  true));
-              continue;
-            }
-            list.add(Ans(elem_list[i * 3 + 2], elem_list[i * 3 + 3] + "</g>",
-                elem_list[i * 3 + 4], true));
-          }
-          first_part= elem_list[0] + elem_list[1];
-          svg_ans=list;
-          }
-
-          // implement interaction
-          for (int i = 0; i < svg_ans.length; i++) {
-            svg_ans[i].set_state(x, y);
-            ans[i] = svg_ans[i].get_state();
-          }
-          String new_svg = first_part;
-          for (int i = 0; i <  svg_ans.length; i++) {
-            new_svg = new_svg + "\n" + svg_ans[i].toString();
-          }
-          print(to_string_ans(ans));
-          displayedSvg = new_svg;
-          setState(() {});
-        }
+        udpate(details, false);
       },
       child: Container(
         color: Color.fromRGBO(255, 255, 255, 1),
@@ -216,23 +165,146 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
     return false;
   }
 
-  String to_string_ans(List<bool> f){
-    String ret="[";
-    for(int i=0;i<f.length;i++){
-      if(f[i]){
-        ret=ret+'1,';
-      }else{
-        ret=ret+'0,';
+  String to_string_ans(List<bool> f) {
+    String ret = "[";
+    for (int i = 0; i < f.length; i++) {
+      if (f[i]) {
+        ret = ret + '1,';
+      } else {
+        ret = ret + '0,';
       }
     }
-    ret=ret.substring(0,ret.length-1);
-    ret=ret+"]";
+    ret = ret.substring(0, ret.length - 1);
+    ret = ret + "]";
+    return ret;
+  }
+
+  udpate(TapDownDetails details, bool overwirte) {
+    final tapPosition = details.globalPosition;
+    double x = tapPosition.dx;
+    double y = tapPosition.dy;
+    if (inside_svg(x, y) || overwirte) {
+      //inside Svg
+      x = x - offset.dx;
+      y = y - offset.dy;
+      x = x / size.height * viewbox.height;
+      y = y / size.width * viewbox.width;
+      // x y are inside svg position
+      //tap holds the postion inside the element;
+
+      if (svg_ans.isEmpty) {
+        String svg_loc = svg;
+        List<String> elem_list = svg_loc.split("<g");
+
+        for (int i = 0; i < elem_list.length; i++) {
+          if (i == 0) continue;
+          elem_list[i] = "<g" + elem_list[i];
+        }
+        elem_list[elem_list.length - 1].replaceAll("</svg>", "");
+        elem_list.add("</svg>");
+        int k = ((elem_list.length - 3) / 3).toInt();
+        List<Ans> list = [];
+        if (ans.length < k) {
+          for (int i = 0; i < k; i++) {
+            ans.add(false);
+          }
+        }
+        //+2 everywhere 0 1 2
+        for (int i = 0; i < k; i++) {
+          if (i == k - 1) {
+            list.add(Ans(
+                elem_list[i * 3 + 2],
+                elem_list[i * 3 + 3] + "</g>" + "\n</svg>",
+                elem_list[i * 3 + 4],
+                true));
+            continue;
+          }
+          list.add(Ans(elem_list[i * 3 + 2], elem_list[i * 3 + 3] + "</g>",
+              elem_list[i * 3 + 4], true));
+        }
+        first_part = elem_list[0] + elem_list[1];
+        svg_ans = list;
+      }
+
+      // implement interaction
+      for (int i = 0; i < svg_ans.length; i++) {
+        svg_ans[i].set_state(x, y);
+        ans[i] = svg_ans[i].get_state();
+      }
+      String new_svg = first_part;
+      for (int i = 0; i < svg_ans.length; i++) {
+        new_svg = new_svg + "\n" + svg_ans[i].toString();
+      }
+      print(to_string_ans(ans));
+      displayedSvg = new_svg;
+      setState(() {});
+    }
+  }
+
+  void update_with_bool(List<bool> ans_list) {
+    if (svg_ans.isEmpty) {
+      String svg_loc = svg;
+      List<String> elem_list = svg_loc.split("<g");
+
+      for (int i = 0; i < elem_list.length; i++) {
+        if (i == 0) continue;
+        elem_list[i] = "<g" + elem_list[i];
+      }
+      elem_list[elem_list.length - 1].replaceAll("</svg>", "");
+      elem_list.add("</svg>");
+      int k = ((elem_list.length - 3) / 3).toInt();
+      List<Ans> list = [];
+      if (ans.length < k) {
+        for (int i = 0; i < k; i++) {
+          ans.add(false);
+        }
+      }
+      //+2 everywhere 0 1 2
+      for (int i = 0; i < k; i++) {
+        if (i == k - 1) {
+          list.add(Ans(
+              elem_list[i * 3 + 2],
+              elem_list[i * 3 + 3] + "</g>" + "\n</svg>",
+              elem_list[i * 3 + 4],
+              true));
+          continue;
+        }
+        list.add(Ans(elem_list[i * 3 + 2], elem_list[i * 3 + 3] + "</g>",
+            elem_list[i * 3 + 4], true));
+      }
+      first_part = elem_list[0] + elem_list[1];
+      svg_ans = list;
+    }
+
+    for (int i = 0; i < svg_ans.length; i++) {
+      svg_ans[i]._state = ans_list[i];
+    }
+    String new_svg = first_part;
+    for (int i = 0; i < svg_ans.length; i++) {
+      new_svg = new_svg + "\n" + svg_ans[i].toString();
+    }
+    displayedSvg = new_svg;
+    setState(() {});
+  }
+
+  List<bool> get_ans_list() {
+    String string_ans = widgetList[routenum - 1].answer;
+    List<bool> ret = [];
+    while (string_ans != "") {
+      if (string_ans.startsWith("0")) {
+        ret.add(false);
+      }
+      if (string_ans.startsWith("1")) {
+        ret.add(true);
+      }
+      string_ans = string_ans.substring(1);
+    }
+    ans=ret;
     return ret;
   }
 }
 
-
-class Ans{
+class Ans {
   // the 3 string for the image
   String _option;
   String _on;
@@ -242,25 +314,25 @@ class Ans{
   bool _state;
 
   // the postition inside the svg
-  double trans_x=0;
-  double trans_y=0;
+  double trans_x = 0;
+  double trans_y = 0;
 
-  double _x =0;
-  double _y =0;
+  double _x = 0;
+  double _y = 0;
 
   Ans(this._option, this._on, this._off, this._state) {
-     if(_option.contains("translate")){
-    List<String> temp=_option.split("transform=\"");
-    temp=temp[1].replaceAll(RegExp("[a-zA-Z()\"<>]"), "").split(" ");
-    trans_x= double.parse(temp[0]);
-    trans_y= double.parse(temp[1]);
+    if (_option.contains("translate")) {
+      List<String> temp = _option.split("transform=\"");
+      temp = temp[1].replaceAll(RegExp("[a-zA-Z()\"<>]"), "").split(" ");
+      trans_x = double.parse(temp[0]);
+      trans_y = double.parse(temp[1]);
     }
     List<String> curr = _off.split(" d=\"");
     curr = curr[1].split(" ");
-    _x = double.parse(curr[0].replaceAll(RegExp("[a-zA-Z]"), ""))+trans_x;
+    _x = double.parse(curr[0].replaceAll(RegExp("[a-zA-Z]"), "")) + trans_x;
     _y = double.parse(
-        (curr[1].replaceAll(RegExp("[a-zA-Z]"), "_")).split("_")[0])+trans_y;
-    
+            (curr[1].replaceAll(RegExp("[a-zA-Z]"), "_")).split("_")[0]) +
+        trans_y;
   }
   void set_state(double x, double y) {
     // needs transform for matirx
@@ -269,8 +341,6 @@ class Ans{
   }
 
   void fix_multiple(double x, double y, Ans second) {
-
-
     double _x = this._x - x;
     double _x1 = second._x - x;
 
