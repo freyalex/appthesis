@@ -42,8 +42,9 @@ class mul_choise_img_trans extends StatelessWidget {
                 },
                 onDoubleTap: () => Navigator.pop(context),
                 child: Container(
-                  margin: EdgeInsets.fromLTRB(0, 40, 0, 0),
-                  child: Markdown(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  margin: EdgeInsets.fromLTRB(0, 60, 0, 0),
+                  child: MarkdownBody(
                     data: markdown,
                     imageBuilder: (a, v, b) => SvgPicture.asset(
                       a.path,
@@ -292,7 +293,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                       minHeight: 150,
                       maxWidth: 200,
                       minWidth: 150),
-                  child: Markdown(
+                  child: MarkdownBody(
                     data: current.substring(2),
                     selectable: false,
                   ),

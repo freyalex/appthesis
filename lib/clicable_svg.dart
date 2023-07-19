@@ -6,9 +6,139 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // MIT
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:dartlang_utils/dartlang_utils.dart' as str;
+import 'package:flutter_markdown/flutter_markdown.dart';
+
+
+class clicable_svg extends StatelessWidget {
+  final String dir;
+  final String elem;
+  final int routenum;
+  late Map<String, String> svg;
+  @override
+  clicable_svg(
+    this.dir,
+    this.elem,
+    this.routenum,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: rootBundle.loadString(dir + elem),
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.hasData) {
+          String markdown = snapshot.data ?? "";
+          if (markdown == "") {
+            exit(1);
+          }
+          init_SVG(markdown);
+          markdown = modify_links(clean(markdown));
+          return Container(
+              color: Color.fromARGB(255, 255, 255, 255),
+              child: GestureDetector(
+                onTap: () {
+                  String a = 'questionAnsField' + "$routenum";
+                  Navigator.pushNamed(context, a);
+                },
+                onDoubleTap: () => Navigator.pop(context),
+                child: Container(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  margin: EdgeInsets.fromLTRB(0, 60, 0, 0),
+                  child: MarkdownBody(
+                    data: markdown,
+                    imageBuilder: (a, v, b) => SvgPicture.asset(
+                      a.path,
+                      semanticsLabel: dir + elem,
+                    ),
+                  ),
+                ),
+              ));
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
+  init_SVG(String markdown) {
+    List<String> list = markdown.split('\n');
+    int listSize = list.length;
+    int i = 0;
+    svg = HashMap<String, String>();
+    while (i < listSize) {
+      String current = list[i].split(' "')[0];
+      if (current.startsWith("[") && current.contains("]:")) {
+        List<String> list = current.split(": ");
+        if (list.length != 2) exit(1);
+        svg.addAll({list[0]: list[1]});
+      }
+      if (current.contains("## Body")) break;
+      i++;
+    }
+  }
+
+  String clean(String markdown) {
+    List<String> list = markdown.split('\n');
+    int listSize = list.length;
+    int i = 0;
+    int j = 0;
+    String ret = "";
+    while (i < listSize) {
+      String current = list[i];
+      if (current.contains("## Body")) {
+        i++;
+        while (i < listSize) {
+          String current = list[i];
+          if (current.contains("## Question/Challenge")) {
+            i++;
+            continue;
+          }
+          if (current.contains("#")) {
+            break;
+          }
+          if(current.contains('!')){
+             i++;
+            continue;
+          }
+          i++;
+          ret = ret + ("\n" + current);
+        }
+      }
+      i++;
+    }
+    return ret;
+  }
+
+  String modify_links(String str) {
+    List<String> curr = str.split("![");
+    for (int i = 1; i < curr.length; i++) {
+      curr[i] = "![" + curr[i];
+    }
+    List<String> uptd = [];
+    for (int i = 0; i < curr.length; i++) {
+      uptd.addAll(curr[i].split("]"));
+    }
+    for (int i = 1; i < uptd.length; i = i + 2) {
+      uptd[i] = uptd[i] + "]";
+    }
+    curr = uptd;
+    uptd = [];
+    String loc = "";
+    for (int i = 1; i < curr.length; i++) {
+      if (curr[i].startsWith("![") && curr[i].endsWith("]")) {
+        loc = curr[i].substring(1);
+        curr[i] = "![](resource:" + dir + (svg[loc] ?? "") + ")";
+      }
+    }
+    return curr.join();
+  }
+}
+
 
 class clicable_svg_inter extends StatefulWidget {
   final String dir;
