@@ -1,6 +1,7 @@
 /*
 the data is stored here 
 */
+String lang="de";
 List<String> questionList = [];
 class Data{
 int questionType=0;

@@ -20,9 +20,8 @@ class mul_choise_img_trans extends StatelessWidget {
     this.elem,
     this.routenum,
   );
-
   @override
-  Widget build(BuildContext context) {
+  Widget build (BuildContext context) {
     return FutureBuilder(
       future: rootBundle.loadString(dir + elem),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
@@ -37,7 +36,7 @@ class mul_choise_img_trans extends StatelessWidget {
               color: Color.fromARGB(255, 255, 255, 255),
               child: GestureDetector(
                 onTap: () {
-                  String a = 'questionAnsField' + "$routenum";
+                  String a = 'questionAnsField' + "$routenum"+'_'+lang;
                   Navigator.pushNamed(context, a);
                 },
                 onDoubleTap: () => Navigator.pop(context),
@@ -135,9 +134,11 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
   final String dir;
   final String elem;
   final int routenum;
+  final String t;
+  final int que_id;
   late Map<String, String> svg;
   @override
-  mul_choise_img_trans_Ans(this.dir, this.elem, this.routenum);
+  mul_choise_img_trans_Ans(this.dir, this.elem, this.routenum,this.t,this.que_id);
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +203,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
           }
           if (current.contains("!")) {
             Future<List<String>> work = get_svg_ans_name("");
-            j++;
+            
             List<String> list = getAns(current);
             for (int current_ans = 0;
                 current_ans < list.length - 1;
@@ -211,8 +212,8 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
               double height = MediaQuery.of(context).size.height / 2;
               height > width ? height = width : width = height;
               //strings are pointers
-              String a = (j).toString();
-              j++; //this is important
+              j++; 
+              String a = (j).toString();//this is important
               ret.add(
                 UnconstrainedBox(
                   child: TextButton(
@@ -225,8 +226,6 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                       curr = svg[curr] ?? "";
                       List<String> wow = await work;
                       widgetList[routenum - 1].answer = wow[int.parse(a) - 1];
-                      int que_id=3861;
-                      String t="1780bf0b391778f6";
                       var response = http.post(
                           Uri.parse(
                               'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=$que_id&t='+t),
@@ -268,10 +267,8 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
               ),
               onPressed: () {
-                curr = current.substring(3);
+                curr = current.substring(3).replaceAll("_", "");
                 widgetList[routenum - 1].answer = curr;
-                int que_id=3861;
-                String t="1780bf0b391778f6";
                 var response = http.post(
                     Uri.parse(
                          'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=$que_id&t='+t),
@@ -306,6 +303,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
       }
       i++;
     }
+    ret.shuffle();
     return ret;
   }
 
@@ -356,8 +354,6 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
   }
 
   Future<List<String>> get_svg_ans_name(String String_url) async {
-    int que_id=3861;
-    String t="1780bf0b391778f6";
     var url = Uri.parse(
         'https://wettbewerb.informatik-biber.ch/?action=question_standalone&que_id=$que_id&t='+t);
     http.Response data = await http.get(url);
@@ -390,11 +386,4 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
     return test2;
   }
 
-  //not functional
-  int get_que_id(String name){
-    return 0;
-  }
-  String get_t(String name){
-    return "";
-  }
 }

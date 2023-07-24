@@ -1,6 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
-import 'package:appthesis/const/routes.dart';
+import 'package:appthesis/data_class.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart'; // BSD-3
 import 'package:flutter_svg/flutter_svg.dart'; // MIT
@@ -63,7 +63,7 @@ class mul_choise_trans extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          String a = 'questionAnsField' + "$routenum";
+          String a = 'questionAnsField' + "$routenum"+'_'+lang;
           Navigator.pushNamed(context, a);
         },
       ),
