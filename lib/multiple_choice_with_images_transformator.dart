@@ -286,13 +286,15 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      maxHeight: 200,
-                      minHeight: 150,
-                      maxWidth: 200,
-                      minWidth: 150),
+                      maxHeight: 500,
+                      minHeight: 100,
+                      maxWidth: 500,
+                      minWidth: 100),
                   child: MarkdownBody(
                     data: current.substring(2),
                     selectable: false,
+                    fitContent: true,
+                    listItemCrossAxisAlignment: MarkdownListItemCrossAxisAlignment.baseline,
                   ),
                 ),
               ),

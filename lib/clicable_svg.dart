@@ -148,7 +148,7 @@ class clicable_svg_inter extends StatefulWidget {
   @override
   clicable_svg_inter(this.dir, this.elem, this.routenum);
 
-  _clicable_svg_inter createState() => _clicable_svg_inter(dir, elem, routenum);
+  createState() => _clicable_svg_inter(dir, elem, routenum);
 }
 
 class _clicable_svg_inter extends State<clicable_svg_inter> {
