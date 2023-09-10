@@ -2,7 +2,7 @@
 the data is stored here 
 */
 String lang="fr";
-List<int> size =[5,5,5];
+List<int> size =[51,51,51];
 List<String> questionList = [];
 List<bool> questionAns = [];
 List <Data> widgetList = [];

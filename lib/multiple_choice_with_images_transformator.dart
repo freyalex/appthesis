@@ -45,10 +45,15 @@ class mul_choise_img_trans extends StatelessWidget {
                   margin: EdgeInsets.fromLTRB(0, 60, 0, 0),
                   child: MarkdownBody(
                     data: markdown,
-                    imageBuilder: (a, v, b) => SvgPicture.asset(
-                      a.path,
+                    imageBuilder: (a, v, b) => ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: 0,maxHeight:svg.length>6?50: MediaQuery.of(context).size.height/4,),
+                    child:
+                    SvgPicture.asset(
+                      dir+a.path,
                       semanticsLabel: dir + elem,
-                    ),
+                      fit: BoxFit.scaleDown,
+                      
+                    ),),
                   ),
                 ),
               ));
@@ -72,7 +77,6 @@ class mul_choise_img_trans extends StatelessWidget {
         if (list.length != 2) exit(1);
         svg.addAll({list[0]: list[1]});
       }
-      if (current.contains("## Body")) break;
       i++;
     }
   }
@@ -106,6 +110,7 @@ class mul_choise_img_trans extends StatelessWidget {
   }
 
   String modify_links(String str) {
+    
     List<String> curr = str.split("![");
     for (int i = 1; i < curr.length; i++) {
       curr[i] = "![" + curr[i];
@@ -121,9 +126,11 @@ class mul_choise_img_trans extends StatelessWidget {
     uptd = [];
     String loc = "";
     for (int i = 1; i < curr.length; i++) {
-      if (curr[i].startsWith("![") && curr[i].endsWith("]")) {
+      if (curr[i].startsWith("![") && curr[i].endsWith("]")  && curr[i].length!=3)  {
         loc = curr[i].substring(1);
-        curr[i] = "![](resource:" + dir + (svg[loc] ?? "") + ")";
+        curr[i] = "![](resource:" + /*dir +*/ (svg[loc] ?? "") + ")";
+      }else if(curr[i].startsWith("![") && curr[i].endsWith("]")  && curr[i].length==3){
+        curr[i+1].split("\n");
       }
     }
     return curr.join();
@@ -202,8 +209,8 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
             break;
           }
           if (current.contains("!")) {
+           
             Future<List<String>> work = get_svg_ans_name("");
-            
             List<String> list = getAns(current);
             for (int current_ans = 0;
                 current_ans < list.length - 1;
@@ -212,8 +219,10 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
               double height = MediaQuery.of(context).size.height / 2;
               height > width ? height = width : width = height;
               //strings are pointers
+              
               j++; 
               String a = (j).toString();//this is important
+              
               ret.add(
                 UnconstrainedBox(
                   child: TextButton(
@@ -222,8 +231,6 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                           MaterialStateProperty.all<Color>(Colors.blue),
                     ),
                     onPressed: () async {
-                      String curr = (list[current_ans].substring(1));
-                      curr = svg[curr] ?? "";
                       List<String> wow = await work;
                       widgetList[routenum - 1].answer = wow[int.parse(a) - 1];
                       var response = http.post(
@@ -234,13 +241,14 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                           },
                           encoding: Encoding.getByName('utf-8'),
                           body: {"answer": widgetList[routenum - 1].answer});
-                      response.then((value) => print(value.body
-                          .contains("Du hast die richtige Antwort gewählt.")));
+                      response.then((value) => questionAns[routenum-1]=value.body
+                          .contains("Du hast die richtige Antwort gewählt."));
                     },
                     child: Container(
                       color: (Colors.white),
                       margin: const EdgeInsets.all(10),
                       child: SvgPicture.asset(
+                         dir+
                         (list[current_ans + 1]
                             .substring(0, list[current_ans + 1].length - 1)),
                         semanticsLabel: dir + elem,
@@ -267,7 +275,10 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
               ),
               onPressed: () {
-                curr = current.substring(3).replaceAll("_", "");
+                curr = current.substring(3).replaceAll("_", "").replaceAll("|", "");
+                while(curr.startsWith(" ")){
+                  curr=curr.substring(1);
+                }
                 widgetList[routenum - 1].answer = curr;
                 var response = http.post(
                     Uri.parse(
@@ -276,9 +287,9 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                       "Content-Type": "application/x-www-form-urlencoded",
                     },
                     encoding: Encoding.getByName('utf-8'),
-                    body: {"answer": widgetList[routenum - 1].answer});
-                response.then((value) => print(value.body
-                    .contains("Du hast die richtige Antwort gewählt.")));
+                    body: {"answer":widgetList[routenum - 1].answer});
+                response.then((value) => questionAns[routenum]=value.body
+                    .contains("Du hast die richtige Antwort gewählt."));
               },
               child: Container(
                 alignment: Alignment.center,
@@ -291,7 +302,7 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
                       maxWidth: 500,
                       minWidth: 100),
                   child: MarkdownBody(
-                    data: current.substring(2),
+                    data: current.substring(3).replaceAll("|", ""),
                     selectable: false,
                     fitContent: true,
                     listItemCrossAxisAlignment: MarkdownListItemCrossAxisAlignment.baseline,
@@ -305,12 +316,14 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
       }
       i++;
     }
+
     ret.shuffle();
     return ret;
   }
 
   List<String> getAns(String str) {
     List<String> curr = str.split(" ");
+
     for (int i = 0; i < curr.length; i++) {
       curr[i] = modify_links(curr[i]);
       curr[i] = curr[i].replaceAllMapped(" ", (match) => "");
@@ -321,11 +334,13 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
         continue;
       }
       curr[i] = curr[i].replaceAllMapped(RegExp('[^A-Za-z0-9]'), (match) => '');
+      curr[i] =curr[i].replaceAllMapped(RegExp('[()]'), (match) => '');
       curr.removeWhere((element) =>
           !element.contains(RegExp('[a-z]', caseSensitive: false)));
     }
     curr.removeWhere(
         (element) => !element.contains(RegExp('[a-z]', caseSensitive: false)));
+
     return curr;
   }
 
@@ -347,10 +362,11 @@ class mul_choise_img_trans_Ans extends StatelessWidget {
     for (int i = 0; i < curr.length; i++) {
       if (curr[i].startsWith("![") && curr[i].endsWith("]")) {
         loc = curr[i].substring(1);
-        curr[i] = dir + (svg[loc] ?? "") + ")"; //"![](resource:" +
+        curr[i] =  (svg[loc] ?? "") + ")"; //"![](resource:" +
       }
     }
-    curr.removeWhere(
+
+   curr.removeWhere(
         (element) => !element.contains(RegExp('[a-z]', caseSensitive: false)));
     return curr.join();
   }

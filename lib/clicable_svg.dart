@@ -144,11 +144,12 @@ class clicable_svg_inter extends StatefulWidget {
   final String dir;
   final String elem;
   final int routenum;
-
+  final String t;
+  final int que_id;
   @override
-  clicable_svg_inter(this.dir, this.elem, this.routenum);
+  clicable_svg_inter(this.dir, this.elem, this.routenum,this.t,this.que_id);
 
-  createState() => _clicable_svg_inter(dir, elem, routenum);
+  createState() => _clicable_svg_inter(dir, elem, routenum,this.t,this.que_id);
 }
 
 class _clicable_svg_inter extends State<clicable_svg_inter> {
@@ -174,9 +175,12 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
   final String dir;
   final String elem;
   final int routenum;
+  final String t;
+  final int que_id;
 
   @override
-  _clicable_svg_inter(this.dir, this.elem, this.routenum);
+  _clicable_svg_inter(this.dir, this.elem, this.routenum,this.t,this.que_id);
+
   void get_size_offset() {
     //width init is incorrect
     final RenderBox box = key.currentContext!.findRenderObject()! as RenderBox;
@@ -225,8 +229,6 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
           } else {
             exit(2);
           }
-          //WidgetsBinding.instance
-          //    .addPostFrameCallback((_) => get_size_offset());
         },
       ),
     );
@@ -245,8 +247,6 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
     WidgetsBinding.instance.addPostFrameCallback((_) => get_size_offset());
     return GestureDetector(
       onDoubleTap: () {
-        int que_id=3509;
-        String t="411012285942d43f";
         widgetList[routenum - 1].answer = to_string_ans(ans);
         var response = http.post(
             Uri.parse(
@@ -256,7 +256,7 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
             },
             encoding: Encoding.getByName('utf-8'),
             body: {"answer": to_string_ans(ans)});
-        response.then((value) => print(
+        response.then((value) => questionAns[routenum]=(
             value.body.contains("Du hast die richtige Antwort gewählt.")));
         Navigator.pop(context);
       },
@@ -365,7 +365,6 @@ class _clicable_svg_inter extends State<clicable_svg_inter> {
       for (int i = 0; i < svg_ans.length; i++) {
         new_svg = new_svg + "\n" + svg_ans[i].toString();
       }
-      print(to_string_ans(ans));
       displayedSvg = new_svg;
       setState(() {});
     }
